@@ -2,42 +2,249 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VM Player - Descargas</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>VaultStream - Cliente</title>
+  
+  <style>
+    :root {
+      --bg-color: #121214;
+      --card-bg: #1a1a1e;
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      margin-bottom: 16px;
+    }
+
+    h2, h3 {
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* --- FORMULARIOS MÓVILES --- */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      background: #26262b;
+      border: 1px solid #3f3f46;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 16px; /* Evita que iOS haga zoom automático al enfocar */
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-logout {
+      background: #26262b;
+      color: var(--danger);
+      margin-top: 12px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 14px;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    /* --- CONTENEDOR DE ESTADO / PROGRESO --- */
+    #status-container {
+      background: #26262b;
+      border-left: 4px solid var(--primary);
+    }
+
+    .progress-bar {
+      width: 100%;
+      background: #3f3f46;
+      height: 6px;
+      border-radius: 3px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    #progress-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    /* --- TABLA RESPONSIVA COMPATIBLE CON MÓVIL --- */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      color: var(--text-muted);
+      font-size: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #26262b;
+    }
+
+    /* DISEÑO HÍBRIDO: En móviles el Table cambia a bloques CSS flexibles */
+    @media (max-width: 480px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none; /* Ocultamos los títulos de las columnas en móvil */
+      }
+
+      tr {
+        background: #26262b;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      td {
+        padding: 0;
+        text-align: left;
+      }
+
+      td:nth-of-type(1) img {
+        width: 100% !important; /* Miniatura completa arriba */
+        height: auto !important;
+        aspect-ratio: 16/9;
+        border-radius: 6px;
+      }
+
+      td:nth-of-type(2) {
+        font-size: 14px;
+        word-break: break-all; /* No rompe la pantalla con enlaces ultra largos */
+        color: var(--text-muted);
+        max-height: 4.2em;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <div id="login-section" class="card">
-    <h2>Acceso de Usuario</h2>
-    <form id="login-form">
-      <input type="text" id="username" placeholder="Usuario" required>
-      <input type="password" id="password" placeholder="Contraseña" required>
-      <button type="submit">Ingresar al Reproductor</button>
-    </form>
-    <p id="login-error" class="error"></p>
-  </div>
+  <div class="container">
 
-  <div id="player-section" class="hidden">
-    <header>
-      <h1>Mis Videos Pendientes</h1>
-      <button id="logout-btn" class="btn-danger">Salir</button>
-    </header>
-
-    <div id="status-container" class="card hidden">
-      <p id="status-text">Procesando enlace...</p>
-      <div class="progress-bar"><div id="progress-fill"></div></div>
+    <div id="login-section" class="card">
+      <h2>🔐 Acceso Clientes</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username">Usuario</label>
+          <input type="text" id="username" placeholder="Introduce el usuario" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" placeholder="••••" required autocomplete="current-password">
+        </div>
+        <button type="submit">Ingresar</button>
+        <div id="login-error" class="error-msg"></div>
+      </form>
     </div>
 
-    <div class="card">
-      <h3>Enlaces Listos</h3>
-      <div class="table-responsive">
+    <div id="player-section" class="card hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3>📥 Tus Descargas</h3>
+        <button id="logout-btn" class="btn-logout" style="width: auto; margin: 0; padding: 6px 12px; font-size: 14px;">Salir</button>
+      </div>
+
+      <div id="status-container" class="card hidden" style="padding: 12px; margin-bottom: 16px;">
+        <div id="status-text" style="font-size: 14px; font-weight: 500;">Procesando...</div>
+        <div class="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>Video</th>
-              <th>Acción</th>
+              <th style="width: 90px;">Miniatura</th>
+              <th>Enlace guardado</th>
+              <th style="width: 110px; text-align: right;">Acción</th>
             </tr>
           </thead>
           <tbody id="download-list">
@@ -45,8 +252,9 @@
         </table>
       </div>
     </div>
+
   </div>
 
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
