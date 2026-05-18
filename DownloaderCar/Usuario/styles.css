@@ -5,17 +5,17 @@
   --primary: #a6e3a1; /* Verde para descargas */
   --danger: #f38ba8;
   --accent: #f9e2af;
-  
+}
+#player-section{
+  width: 94%;
 }
 
 body {
-  width: 90%;
-  display: contents;
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  /* display: flex; */
+  /*display: flex;*/
   justify-content: center;
   padding: 20px;
 }
@@ -25,7 +25,7 @@ body {
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  /*width: 100%;*/
+  width: 100%;
   max-width: 600px;
   margin-bottom: 20px;
 }
@@ -64,65 +64,3 @@ button:hover { opacity: 0.9; }
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 12px; text-align: left; border-bottom: 1px solid #45475a; }
 td { max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-
-
-/*/////////*/
-/* --- CONFIGURACIÓN DE LA TABLA MAESTRA --- */
-.table-container {
-  width: 90%;
-  overflow-x: auto; /* Scroll elástico de seguridad si la pantalla es diminuta */
-}
-
-table {
-  width: 100%;
-  table-layout: fixed; /* 🔥 OBLIGA a las celdas a respetar los % asignados abajo */
-  border-collapse: collapse;
-}
-
-td {
-  vertical-align: middle;
-  padding: 8px 4px;
-}
-
-/* --- CLASES DE ANCHO RESPONSIVO POR COLUMNA --- */
-.cell-thumb {
-  width: 25%; /* La miniatura ocupa el 25% del ancho disponible */
-}
-
-.cell-url {
-  width: 55%; /* La URL tiene el espacio principal */
-}
-
-.cell-btn {
-  width: 20%; /* El botón se mantiene compacto a la derecha */
-  text-align: right;
-}
-
-/* --- MINIATURA INTERNA --- */
-.responsive-thumb {
-  width: 100%;
-  max-width: 80px;
-  height: 45px;
-  object-fit: cover;
-  border-radius: 4px;
-  display: block;
-}
-
-/* --- TRATAMIENTO ANTIDESBORDAMIENTO DE LA URL --- */
-.video-url-text {
-  display: block;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* Pone el '...' automáticamente al final de la celda */
-}
-
-/* --- BOTÓN AJUSTABLE --- */
-.btn-download {
-  width: 100%;
-  max-width: 110px; /* Evita que el botón crezca demasiado en PC */
-  padding: 8px;
-  font-size: 14px;
-  white-space: nowrap;
-}
