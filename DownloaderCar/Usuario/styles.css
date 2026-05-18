@@ -12,8 +12,8 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  display: flex;
-  /* justify-content: center; */
+  /* display: flex; */
+  justify-content: center;
   padding: 20px;
 }
 
