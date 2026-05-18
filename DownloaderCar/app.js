@@ -1,11 +1,11 @@
-// Registro del Service Worker para soporte PWA Offline
+// --- REGISTRO DEL SERVICE WORKER ---
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js')
     .then(() => console.log("Service Worker registrado con éxito."))
     .catch(err => console.log("Error al registrar SW:", err));
 }
 
-// Selectores del DOM
+// --- SELECTORES DEL DOM ---
 const loginSection = document.getElementById('login-section');
 const dashboardSection = document.getElementById('dashboard-section');
 const loginForm = document.getElementById('login-form');
@@ -17,47 +17,57 @@ const submitBtn = document.getElementById('submit-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 const logoutBtn = document.getElementById('logout-btn');
 
-// Estado de la aplicación en LocalStorage
+// --- ESTADO DE LA APLICACIÓN ---
 let videos = JSON.parse(localStorage.getItem('pending_videos')) || [];
 
-// --- SISTEMA DE LOGIN DE PRUEBA ---
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const user = document.getElementById('username').value;
-  const pass = document.getElementById('password').value;
+// --- LOGICA CRUD DE VIDEOS (Declarada antes de usarse) ---
 
-  // Credenciales quemadas para demo (Cambiar por fetch a API en producción)
-  if (user === "admin" && pass === "1234") {
-    localStorage.setItem('isLoggedIn', 'true');
-    checkAuth();
-  } else {
-    document.getElementById('login-error').innerText = "Credenciales incorrectas";
-  }
-});
+// 1. Renderizar la lista en la tabla con soporte responsivo y límite de 25 caracteres
+function renderVideos() {
+  if (!videoList) return;
+  videoList.innerHTML = '';
+  
+  videos.forEach(video => {
+    const tr = document.createElement('tr');
+    
+    // Limitador estricto a 25 caracteres para el tooltip flotante (title)
+    const shortTitle = video.url.length > 25 
+      ? video.url.slice(0, 25) + '...' 
+      : video.url;
 
-logoutBtn.addEventListener('click', () => {
-  localStorage.removeItem('isLoggedIn');
-  checkAuth();
-});
-
-function checkAuth() {
-  if (localStorage.getItem('isLoggedIn') === 'true') {
-    loginSection.classList.add('hidden');
-    dashboardSection.classList.remove('hidden');
-    renderVideos();
-  } else {
-    loginSection.classList.remove('hidden');
-    dashboardSection.classList.add('hidden');
-  }
+    tr.innerHTML = `
+      <td class="col-url">
+        <span class="video-url-text" title="${shortTitle}">${video.url}</span>
+      </td>
+      <td class="col-date">${video.date}</td>
+      <td class="col-actions">
+        <button class="btn-edit" onclick="editVideo(${video.id})">✏️ Editar</button>
+        <button class="btn-delete" onclick="deleteVideo(${video.id})">❌ Eliminar</button>
+      </td>
+    `;
+    videoList.appendChild(tr);
+  });
 }
 
-// --- LOGICA CRUD DE VIDEOS ---
+function saveAndRender() {
+  localStorage.setItem('pending_videos', JSON.stringify(videos));
+  renderVideos();
+}
+
+function resetForm() {
+  videoUrlInput.value = '';
+  videoIdInput.value = '';
+  submitBtn.innerText = "Guardar Enlace";
+  cancelBtn.classList.add('hidden');
+}
 
 // Crear o Editar Enlace
 videoForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const url = videoUrlInput.value;
+  const url = videoUrlInput.value.trim();
   const id = videoIdInput.value;
+
+  if (!url) return;
 
   if (id) {
     // Modo Edición
@@ -74,27 +84,9 @@ videoForm.addEventListener('submit', (e) => {
   }
 
   saveAndRender();
-  videoUrlInput.value = '';
 });
 
-// Renderizar la lista en la tabla
-function renderVideos() {
-  videoList.innerHTML = '';
-  videos.forEach(video => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td title="${video.url}">${video.url}</td>
-      <td>${video.date}</td>
-      <td>
-        <button class="btn-edit" onclick="editVideo(${video.id})">Editar</button>
-        <button class="btn-delete" onclick="deleteVideo(${video.id})">Eliminar</button>
-      </td>
-    `;
-    videoList.appendChild(tr);
-  });
-}
-
-// Preparar formulario para editar
+// Registrar funciones globales en window para asegurar compatibilidad con onclick
 window.editVideo = function(id) {
   const video = videos.find(v => v.id === id);
   if (video) {
@@ -102,31 +94,49 @@ window.editVideo = function(id) {
     videoIdInput.value = video.id;
     submitBtn.innerText = "Actualizar Enlace";
     cancelBtn.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Comodidad en móvil
   }
-}
+};
 
-// Eliminar Enlace
 window.deleteVideo = function(id) {
   if (confirm("¿Seguro que deseas eliminar este enlace?")) {
     videos = videos.filter(v => v.id !== id);
     saveAndRender();
   }
-}
+};
 
-// Cancelar Edición
 cancelBtn.addEventListener('click', resetForm);
 
-function resetForm() {
-  videoUrlInput.value = '';
-  videoIdInput.value = '';
-  submitBtn.innerText = "Guardar Enlace";
-  cancelBtn.classList.add('hidden');
+// --- SISTEMA DE AUTENTICACIÓN ---
+function checkAuth() {
+  if (localStorage.getItem('isLoggedIn') === 'true') {
+    loginSection.classList.add('hidden');
+    dashboardSection.classList.remove('hidden');
+    renderVideos(); // 🟢 Ahora sí existe y está declarada arriba
+  } else {
+    loginSection.classList.remove('hidden');
+    dashboardSection.classList.add('hidden');
+  }
 }
 
-function saveAndRender() {
-  localStorage.setItem('pending_videos', JSON.stringify(videos));
-  renderVideos();
-}
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const user = document.getElementById('username').value;
+  const pass = document.getElementById('password').value;
 
-// Inicializar la app al cargar
+  if (user === "admin" && pass === "1234") {
+    localStorage.setItem('isLoggedIn', 'true');
+    checkAuth();
+  } else {
+    document.getElementById('login-error').innerText = "Credenciales incorrectas";
+  }
+});
+
+logoutBtn.addEventListener('click', () => {
+  localStorage.removeItem('isLoggedIn');
+  checkAuth();
+});
+
+// --- INICIALIZACIÓN ---
+// Ejecutamos la verificación al final, asegurando que todo el script fue leído
 checkAuth();
