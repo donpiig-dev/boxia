@@ -5,14 +5,17 @@
   --primary: #a6e3a1; /* Verde para descargas */
   --danger: #f38ba8;
   --accent: #f9e2af;
+  
 }
 
 body {
+  width: 90%;
+  display: contents;
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  display: flex;
+  /* display: flex; */
   justify-content: center;
   padding: 20px;
 }
@@ -67,7 +70,7 @@ td { max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: n
 /*/////////*/
 /* --- CONFIGURACIÓN DE LA TABLA MAESTRA --- */
 .table-container {
-  width: 100%;
+  width: 90%;
   overflow-x: auto; /* Scroll elástico de seguridad si la pantalla es diminuta */
 }
 
