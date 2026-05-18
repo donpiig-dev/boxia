@@ -7,6 +7,38 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.json">
 </head>
+  <style>
+    /* 1. Evita que la estructura del layout o el body superen el ancho del dispositivo */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* 2. Asegura que el contenedor de la tabla tenga scroll interno si es necesario, 
+   en lugar de romper toda la interfaz de la PWA */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+}
+
+/* 3. Fuerza a la tabla a respetar el espacio asignado sin estirarse */
+table {
+  width: 100%;
+  table-layout: fixed; /* 💡 Esta regla es mágica: obliga a respetar los anchos establecidos */
+  border-collapse: collapse;
+}
+
+/* 4. Recorta los links gigantes añadiendo puntos suspensivos (...) */
+.video-url-text {
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+  </style>
 <body>
 
   <div id="login-section" class="card">
