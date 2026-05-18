@@ -110,40 +110,64 @@ window.downloadVideo = async function(videoId) {
     }
 
     const data = await response.json();
-    
-    // Obtener la URL de flujo generada por Cobalt (acepta tanto data.url como data.text si redirige)
-    const streamUrl = data.url || data.text;
+    console.log("🔄 Respuesta nativa de Cobalt V10:", data);
+
+    // 🟢 DETECTOR INTELIGENTE DE FLUJO PARA V10:
+    let streamUrl = "";
+
+    if (data.status === "redirect" || data.status === "stream") {
+      streamUrl = data.url;
+    } else if (data.status === "picker" && data.picker && data.picker.length > 0) {
+      // Si es un formato de TikTok que contiene múltiples archivos (como fotos o audio separado)
+      // Tomamos el primer elemento válido que contenga un enlace de descarga
+      streamUrl = data.picker[0].url; 
+    }
+
+    // Si sigue vacía, buscamos cualquier propiedad de texto alternativa por si acaso
     if (!streamUrl) {
-      throw new Error(data.text || "Cobalt no devolvió un flujo de descarga válido.");
+      streamUrl = data.url || data.text;
     }
 
-    // 2. Secuestrar los bytes del video en segundo plano (Blob)
+    if (!streamUrl) {
+      throw new Error("El servidor de Cobalt procesó el enlace pero no generó una URL de descarga compatible.");
+    }
+
+    // 2. Intentar secuestrar los bytes en segundo plano (Blob)
     updateStatusContainer("Descargando flujo binario del video...", "50%");
-    const videoRes = await fetch(streamUrl);
-    if (!videoRes.ok) throw new Error("No se pudo obtener el archivo binario desde el servidor de flujo.");
-    const videoBlob = await videoRes.blob();
-
-    // 3. Forzar guardado nativo mediante File System Access API o Descarga Directa
-    updateStatusContainer("Guardando archivo en el dispositivo...", "85%");
     
-    if ('showSaveFilePicker' in window) {
-      // Entornos modernos / Escritorio: El usuario elige la carpeta (Ideal para tarjetas SD)
-      const handle = await window.showSaveFilePicker({
-        suggestedName: `video_${videoId}.mp4`,
-        types: [{
-          description: 'Video MP4',
-          accept: {'video/mp4': ['.mp4']}
-        }]
-      });
-      const writable = await handle.createWritable();
-      await writable.write(videoBlob);
-      await writable.close();
-    } else {
-      // Mobile / Fallback: Inyección Blob tradicional si showSaveFilePicker no está disponible
-      const blobUrl = URL.createObjectURL(videoBlob);
-      triggerNativeDownload(blobUrl, `video_${videoId}.mp4`);
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+    try {
+      const videoRes = await fetch(streamUrl);
+      if (!videoRes.ok) throw new Error("Fallo de red al obtener el binario");
+      
+      const videoBlob = await videoRes.blob();
+
+      // 3. Guardar archivo
+      if ('showSaveFilePicker' in window) {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: `video_${videoId}.mp4`,
+          types: [{ description: 'Video MP4', accept: {'video/mp4': ['.mp4']} }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(videoBlob);
+        await writable.close();
+      } else {
+        // En móviles entrará aquí: Crea el enlace local temporal
+        const blobUrl = URL.createObjectURL(videoBlob);
+        triggerNativeDownload(blobUrl, `video_${videoId}.mp4`);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+      }
+      
+    } catch (blobError) {
+      // 🟢 PLAN DE CONTINGENCIA PARA MÓVILES:
+      // Si el fetch del binario falla por bloqueos del navegador móvil, 
+      // le pasamos el streamUrl directo al inyector para que el navegador lo maneje nativamente.
+      console.warn("⚠️ No se pudo procesar como Blob en móvil, usando descarga directa:", blobError);
+      updateStatusContainer("Redirigiendo a descarga directa nativa...", "85%");
+      triggerNativeDownload(streamUrl, `video_${videoId}.mp4`);
     }
+
+    updateStatusContainer("¡Proceso completado!", "100%");
+    setTimeout(hideStatusContainer, 3000);
 
     updateStatusContainer("¡Video guardado con éxito!", "100%");
     setTimeout(hideStatusContainer, 3000);
