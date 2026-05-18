@@ -83,13 +83,17 @@ function renderAdminList() {
   downloadList.innerHTML = ''; // O el contenedor correspondiente
 
   videos.forEach(video => {
+    const shortTitle = video.url.length > 20
+    
+    ? video.url.slice(0, 12) + '...' 
+    : video.url;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="width: 20%;">
         <img src="${video.thumbnail || 'placeholder.jpg'}" style="width: 100%; max-width: 80px; border-radius: 4px;">
       </td>
       <td style="width: 60%;">
-        <span class="video-url-text" title="${video.url}">${video.url}</span>
+        <span class="video-url-text" title="${video.url}">${video.url.slice(0, 25) + '...'}</span>
       </td>
       <td style="width: 20%; text-align: right;">
         <button onclick="eliminarVideo(${video.id})">❌</button>
