@@ -53,24 +53,25 @@ function renderDownloadList() {
   downloadList.innerHTML = '';
   const videos = JSON.parse(localStorage.getItem('pending_videos')) || [];
 
+
   if (videos.length === 0) {
     downloadList.innerHTML = `<tr><td colspan="3" style="text-align:center;">No hay enlaces pendientes.</td></tr>`;
     return;
   }
 
   videos.forEach(video => {
+    const thumbUrl = video.thumbnail || 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7';
     const shortTitle = video.url.length > 20
     
     ? video.url.slice(0, 12) + '...' 
     : video.url;
-    const thumbUrl = video.thumbnail || 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7';
-    
+  
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
         <img src="${thumbUrl}" alt="Miniatura" style="width: 80px; height: 45px; object-fit: cover; border-radius: 4px;">
       </td>
-      <td title="${video.url}">${video.url.slice(0, 12) + '...'}</td>
+      <td title="${video.url}">${video.url.slice(0, 25) + '...'}</td>
       <td>
         <button class="btn-download" onclick="downloadVideo(${video.id})">⬇️ Descargar</button>
       </td>
@@ -114,6 +115,7 @@ window.downloadVideo = async function(videoId) {
     }
 
     const data = await response.json();
+    console.log(data.filename)
     console.log("🔄 Respuesta nativa de Cobalt V10:", data);
 
     // 🟢 DETECTOR INTELIGENTE DE FLUJO PARA V10:
@@ -142,7 +144,7 @@ window.downloadVideo = async function(videoId) {
     try {
       const videoRes = await fetch(streamUrl);
       if (!videoRes.ok) throw new Error("Fallo de red al obtener el binario");
-      
+      console.log(videoRes)
       const videoBlob = await videoRes.blob();
 
       // 3. Guardar archivo
