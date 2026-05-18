@@ -148,7 +148,7 @@ window.downloadVideo = async function(videoId) {
       // 3. Guardar archivo
       if ('showSaveFilePicker' in window) {
         const handle = await window.showSaveFilePicker({
-          suggestedName: `video_${videoId}.mp4`,
+          suggestedName: `video_${data.filename}.mp4`,
           types: [{ description: 'Video MP4', accept: {'video/mp4': ['.mp4']} }]
         });
         const writable = await handle.createWritable();
