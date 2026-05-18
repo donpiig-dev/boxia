@@ -75,7 +75,7 @@ function renderDownloadList() {
           <img src="${thumbUrl}" alt="Miniatura" class="responsive-thumb">
         </td>
         <td class="cell-url">
-          <span class="video-url-text" title="${shortTitle}">${video.url}</span>
+          <span class="video-url-text" title="${shortTitle}">${video.url.slice(0, 12) + '...'}</span>
         </td>
         <td class="cell-btn">
           <button class="btn-download" onclick="downloadVideo(${video.id})">⬇️ Descargar</button>
