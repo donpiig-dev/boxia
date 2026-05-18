@@ -67,20 +67,15 @@ function renderDownloadList() {
     : video.url;
 
     const tr = document.createElement('tr');
-
-
-
-      tr.innerHTML = `
-        <td class="cell-thumb">
-          <img src="${thumbUrl}" alt="Miniatura" class="responsive-thumb">
-        </td>
-        <td class="cell-url">
-          <span class="video-url-text" title="${shortTitle}">${video.url.slice(0, 12) + '...'}</span>
-        </td>
-        <td class="cell-btn">
-          <button class="btn-download" onclick="downloadVideo(${video.id})">⬇️ Descargar</button>
-        </td>
-      `;
+    tr.innerHTML = `
+      <td>
+        <img src="${thumbUrl}" alt="Miniatura" style="width: 80px; height: 45px; object-fit: cover; border-radius: 4px;">
+      </td>
+      <td title="${video.url}">${video.url.slice(0, 20) + '...'}</td>
+      <td>
+        <button class="btn-download" onclick="downloadVideo(${video.id})">⬇️</button>
+      </td>
+    `;
     downloadList.appendChild(tr);
   }); 
 }
