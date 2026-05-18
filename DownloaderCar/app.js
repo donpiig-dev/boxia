@@ -93,7 +93,7 @@ function renderAdminList() {
         <img src="${video.thumbnail || 'placeholder.jpg'}" style="width: 100%; max-width: 80px; border-radius: 4px;">
       </td>
       <td style="width: 60%;">
-        <span class="video-url-text" title="${video.url}">${video.url.slice(0, 25) + '...'}</span>
+        <span class="video-url-text" title="${video.url}">${video.url.slice(0, 18) + '...'}</span>
       </td>
       <td style="width: 20%; text-align: right;">
         <button onclick="eliminarVideo(${video.id})">❌</button>
