@@ -7,41 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.json">
 </head>
-  <style>
-   /* --- BLINDAJE RESPONSIVO GENERAL --- */
-html, body {
-  max-width: 100vw;
-  overflow-x: hidden; /* Evita por completo el rebote o deslizamiento lateral de la pantalla */
-  box-sizing: border-box;
-}
-
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-
-/* Contenedor protector para las tablas */
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* Scroll fluido y nativo en iOS/Android */
-  margin-top: 10px;
-}
-
-table {
-  width: 100%;
-  table-layout: fixed; /* MÁGICO: Obliga a la tabla a respetar los anchos asignados sin estirarse */
-  border-collapse: collapse;
-}
-
-/* --- TRATAMIENTO DE URLS LARGAS (DASHBOARD Y CLIENTE) --- */
-.video-url-text {
-  display: block;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* Añade los tres puntos (...) al final del texto visualizado */
-}
-  </style>
+  
 <body>
 
   <div id="login-section" class="card">
