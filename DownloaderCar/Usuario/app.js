@@ -59,6 +59,10 @@ function renderDownloadList() {
   }
 
   videos.forEach(video => {
+    const shortTitle = video.url.length > 20
+    
+    ? video.url.slice(0, 12) + '...' 
+    : video.url;
     const thumbUrl = video.thumbnail || 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7';
     
     const tr = document.createElement('tr');
@@ -66,7 +70,7 @@ function renderDownloadList() {
       <td>
         <img src="${thumbUrl}" alt="Miniatura" style="width: 80px; height: 45px; object-fit: cover; border-radius: 4px;">
       </td>
-      <td title="${video.url}">${video.url}</td>
+      <td title="${video.url}">${video.url.slice(0, 12) + '...'}</td>
       <td>
         <button class="btn-download" onclick="downloadVideo(${video.id})">⬇️ Descargar</button>
       </td>
