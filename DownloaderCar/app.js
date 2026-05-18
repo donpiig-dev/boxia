@@ -77,29 +77,20 @@ videoForm.addEventListener('submit', (e) => {
   videoUrlInput.value = '';
 });
 
-function renderAdminList() {
-  // ... tu código base para obtener los videos ...
-  
-  downloadList.innerHTML = ''; // O el contenedor correspondiente
-
+// Renderizar la lista en la tabla
+function renderVideos() {
+  videoList.innerHTML = '';
   videos.forEach(video => {
-    const shortTitle = video.url.length > 20
-    
-    ? video.url.slice(0, 12) + '...' 
-    : video.url;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td style="width: 20%;">
-        <img src="${video.thumbnail || 'placeholder.jpg'}" style="width: 100%; max-width: 80px; border-radius: 4px;">
-      </td>
-      <td style="width: 60%;">
-        <span class="video-url-text" title="${video.url}">${video.url.slice(0, 18) + '...'}</span>
-      </td>
-      <td style="width: 20%; text-align: right;">
-        <button onclick="eliminarVideo(${video.id})">❌</button>
+      <td title="${video.url}">${video.url}</td>
+      <td>${video.date}</td>
+      <td>
+        <button class="btn-edit" onclick="editVideo(${video.id})">Editar</button>
+        <button class="btn-delete" onclick="deleteVideo(${video.id})">Eliminar</button>
       </td>
     `;
-    downloadList.appendChild(tr);
+    videoList.appendChild(tr);
   });
 }
 
